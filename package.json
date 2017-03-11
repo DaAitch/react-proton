@@ -1,0 +1,25 @@
+{
+  "name": "react-proton",
+  "version": "1.0.0",
+  "description": "Build continuous responsive react websites.",
+  "main": "index.js",
+  "scripts": {
+    "test": "react-scripts test --env=jsdom"
+  },
+  "author": "Philipp Renoth <renoth@wildoak.de>",
+  "license": "ISC",
+  "devDependencies": {
+    "enzyme": "^2.7.1",
+    "jasmine": "^2.5.3",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-addons-test-utils": "^15.4.2",
+    "react-scripts": "^0.9.5"
+  },
+  "peerDependencies": {
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-addons-test-utils": "^15.4.2",
+    "react-scripts": "^0.9.5"
+  }
+}
