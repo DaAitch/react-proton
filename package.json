@@ -1,6 +1,6 @@
 {
   "name": "react-proton",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Build continuous responsive react websites.",
   "main": "dist/proton.js",
   "scripts": {
