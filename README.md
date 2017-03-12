@@ -2,10 +2,14 @@
 `react-proton` is designed for you to build **continuous and discret responsive** websites.
 That means you are able to deduce every attribute from a changing continuous value, e.g. the screen size (it could also be any other, like time of the day in minutes).
 
+## Live Demo
+[react-proton-example](https://daaitch.github.io/react-proton-example/)
+
 ## Protons and Electrons
 
 The `Proton` is the core of your application. It keeps the current value you are interested in and everytime it changes, all `Electrons` are notified.
 `Electrons` can be given react-styles with values:
+
 1. as known constant values: `fontSize: 10`
 1. as discret relative to breakpoints: `fontSize: { m: 10, l: 20 }`
 1. as interpolation expression: `fontSize: [10, 20]`
