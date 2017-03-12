@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { mount } from 'enzyme';
-import { Electron, Proton, protonStyle } from './proton';
+import { Electron, Proton, protonStyle, ProtonProvider } from './proton';
 import 'jasmine';
 
 const asyncTest = run => done => run().then(done, err => { fail(err); done(); });
@@ -155,10 +155,13 @@ describe('protonStyle', () => {
                 s2: 'value3'
             }
         };
+
+        proton.setSize(150);
+
         expect(protonStyle(style, proton)).toEqual({
             style1: 'value1',
-            style2: 10,
-            style3: 'value1'
+            style2: 30,
+            style3: 'value2'
         });
     });
     
@@ -174,5 +177,47 @@ describe('protonStyle', () => {
             style1: 'value1',
             style2: 10
         });
+    });
+
+    it('should combine style with min size proton', () => {
+        const style = {
+            style1: {
+                s0: 'value0',
+                s2: 'value2'
+            }
+        };
+
+        proton.setSize(80);
+
+        expect(protonStyle(style, proton)).toEqual({
+            style1: 'value0'
+        });
+    });
+});
+
+describe('<ProtonProvider />', () => {
+    it('should provide proton', () => {
+        const s1 = 100;
+        const s2 = 200;
+        const proton = new Proton('s0', {s1, s2})
+
+        const X = (props, context) => <p>{context.proton.protonFactor}</p>;
+        X.contextTypes = {
+            proton: React.PropTypes.object.isRequired
+        };
+        const wrapper = mount(<ProtonProvider
+            proton={proton}
+        ><X /></ProtonProvider>);
+
+        wrapper.update();
+        expect(wrapper.text()).toBe('0');
+
+        proton.setSize(150);
+        wrapper.update();
+        expect(wrapper.text()).toBe('0.5');
+
+        proton.setSize(200);
+        wrapper.update();
+        expect(wrapper.text()).toBe('1');
     });
 });

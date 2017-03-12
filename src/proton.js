@@ -118,25 +118,13 @@ export class Proton {
 
 export class ProtonProvider extends React.Component {
 
-    proton = new Proton();
-
-    handleResize = evt => {
-        this.proton.setSize(evt.target.innerWidth);
-    };
-
-    componentDidMount() {
-        window.addEventListener('resize', this.handleResize);
-        this.proton.setSize(window.innerWidth);
-    }
-
     componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
         this.proton.clear();
     }
 
     getChildContext() {
         return {
-            proton: this.proton
+            proton: this.props.proton
         };
     }
 
@@ -150,7 +138,9 @@ ProtonProvider.childContextTypes = {
     proton: React.PropTypes.any.isRequired
 };
 
-
+ProtonProvider.propTypes = {
+    proton: React.PropTypes.object.isRequired
+};
 
 
 
@@ -272,7 +262,7 @@ export const protonStyle = (protonStyle_, proton) => {
         const attr = protonStyle_[key];
         
         if (Array.isArray(attr)) {
-            style[key] = attr[0] + attr[1] * proton.protonFactor;
+            style[key] = attr[0] + (attr[1] - attr[0]) * proton.protonFactor;
         } else if (typeof attr === 'object') {
             let protonName = proton.protonName;
             let protonIndex = proton.breakpointNameToIndex[protonName];

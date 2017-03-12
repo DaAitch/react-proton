@@ -163,38 +163,20 @@ var ProtonProvider = exports.ProtonProvider = function (_React$Component) {
     (0, _inherits3.default)(ProtonProvider, _React$Component);
 
     function ProtonProvider() {
-        var _ref;
-
-        var _temp, _this4, _ret;
-
         (0, _classCallCheck3.default)(this, ProtonProvider);
-
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-        }
-
-        return _ret = (_temp = (_this4 = (0, _possibleConstructorReturn3.default)(this, (_ref = ProtonProvider.__proto__ || (0, _getPrototypeOf2.default)(ProtonProvider)).call.apply(_ref, [this].concat(args))), _this4), _this4.proton = new Proton(), _this4.handleResize = function (evt) {
-            _this4.proton.setSize(evt.target.innerWidth);
-        }, _temp), (0, _possibleConstructorReturn3.default)(_this4, _ret);
+        return (0, _possibleConstructorReturn3.default)(this, (ProtonProvider.__proto__ || (0, _getPrototypeOf2.default)(ProtonProvider)).apply(this, arguments));
     }
 
     (0, _createClass3.default)(ProtonProvider, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            window.addEventListener('resize', this.handleResize);
-            this.proton.setSize(window.innerWidth);
-        }
-    }, {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {
-            window.removeEventListener('resize', this.handleResize);
             this.proton.clear();
         }
     }, {
         key: 'getChildContext',
         value: function getChildContext() {
             return {
-                proton: this.proton
+                proton: this.props.proton
             };
         }
     }, {
@@ -209,6 +191,10 @@ var ProtonProvider = exports.ProtonProvider = function (_React$Component) {
 ProtonProvider.childContextTypes = {
     proton: _react2.default.PropTypes.any.isRequired
 };
+
+process.env.NODE_ENV !== "production" ? ProtonProvider.propTypes = {
+    proton: _react2.default.PropTypes.object.isRequired
+} : void 0;
 
 var protonize = exports.protonize = function protonize(Component) {
     var Protonized = function (_React$Component2) {
@@ -307,7 +293,7 @@ var protonStyle = exports.protonStyle = function protonStyle(protonStyle_, proto
         var attr = protonStyle_[key];
 
         if (Array.isArray(attr)) {
-            style[key] = attr[0] + attr[1] * proton.protonFactor;
+            style[key] = attr[0] + (attr[1] - attr[0]) * proton.protonFactor;
         } else if ((typeof attr === 'undefined' ? 'undefined' : (0, _typeof3.default)(attr)) === 'object') {
             var protonName = proton.protonName;
             var protonIndex = proton.breakpointNameToIndex[protonName];
