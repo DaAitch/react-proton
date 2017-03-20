@@ -251,6 +251,7 @@ Electron_.contextTypes = {
 export const Electron = protonize(Electron_);
 
 
+
 export const protonStyle = (protonStyle_, proton) => {
     if (!protonStyle_) {
         return null;
@@ -262,7 +263,7 @@ export const protonStyle = (protonStyle_, proton) => {
         const attr = protonStyle_[key];
         
         if (Array.isArray(attr)) {
-            style[key] = attr[0] + (attr[1] - attr[0]) * proton.protonFactor;
+            style[key] = interpolate(attr[0], attr[1], attr[2], proton.protonFactor);
         } else if (typeof attr === 'object') {
             let protonName = proton.protonName;
             let protonIndex = proton.breakpointNameToIndex[protonName];
@@ -283,10 +284,116 @@ export const protonStyle = (protonStyle_, proton) => {
                     style[key] = attr[protonName];
                 }
             }
+        } else if (typeof attr === 'function') {
+            style[key] = attr(proton.protonFactor);
         } else {
             style[key] = attr;
         }
     });
 
     return style;
+};
+
+const interpolate = (a, b, u, f) => {
+
+    // number check
+    {
+        const na = +a;
+        const nb = +b;
+
+        if (!isNaN(na) && !isNaN(nb)) {
+            const number = interpolateNumber(na, nb, f);
+            if (!u) {
+                return number;
+            }
+
+            return '' + number + u;
+        }
+    }
+
+    // color check
+    {
+        const ca = '' + a;
+        const cb = '' + b;
+
+        if (
+            (ca.length === 4 || ca.length === 7)
+            && (cb.length === 4 || cb.length === 7)
+            && ca[0] === '#' && cb[0] === '#'
+        ) {
+            return interpolateColor(ca, cb, f);
+        }
+    }
+
+    return 'unknown';
+
+};
+
+const interpolateNumber = (na, nb, f) => na + f * (nb - na);
+
+const interpolateColor = (ca, cb, f) => {
+    let caNum = parseInt(ca.substring(1), 16);
+
+    let caNumRed;
+    let caNumGreen;
+    let caNumBlue;
+
+    if (ca.length === 4) {
+        caNumRed = (caNum >> 8) & 0xf;
+        caNumGreen = (caNum >> 4) & 0xf;
+        caNumBlue = caNum & 0xf;
+
+        caNumRed += 16 * caNumRed;
+        caNumGreen += 16 * caNumGreen;
+        caNumBlue += 16 * caNumBlue;
+    } else {
+        caNumRed = (caNum >> 16) & 0xff;
+        caNumGreen = (caNum >> 8) & 0xff;
+        caNumBlue = caNum & 0xff;
+    }
+
+    let cbNum = parseInt(cb.substring(1), 16);
+
+    let cbNumRed;
+    let cbNumGreen;
+    let cbNumBlue;
+
+    if (cb.length === 4) {
+        cbNumRed = (cbNum >> 8) & 0xf;
+        cbNumGreen = (cbNum >> 4) & 0xf;
+        cbNumBlue = cbNum & 0xf;
+
+        cbNumRed += 16 * cbNumRed;
+        cbNumGreen += 16 * cbNumGreen;
+        cbNumBlue += 16 * cbNumBlue;
+    } else {
+        cbNumRed = (cbNum >> 16) & 0xff;
+        cbNumGreen = (cbNum >> 8) & 0xff;
+        cbNumBlue = cbNum & 0xff;
+    }
+
+    const red = Math.round(caNumRed + f * (cbNumRed - caNumRed));
+    const green = Math.round(caNumGreen + f * (cbNumGreen - caNumGreen));
+    const blue = Math.round(caNumBlue + f * (cbNumBlue - caNumBlue));
+
+    const number = (red << 16) + (green << 8) + (blue);
+    return '#' + number.toString(16);
+};
+
+const shortHexNumToLong = shortHexNum => {
+    let caRed = (shortHexNum >> 8) & 0xf;
+    caRed += 16 * caRed;
+    
+    let caGreen = (shortHexNum >> 4) & 0xf;
+    caGreen += 16 * caGreen;
+
+    let caBlue = shortHexNum & 0xf;
+    caBlue += 16 * caBlue;
+
+    return (caRed << 16) + (caGreen << 8) + caBlue;
+};
+
+
+const interpolateUnit = (ua, ub, f) => {
+
 };

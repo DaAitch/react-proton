@@ -293,7 +293,7 @@ var protonStyle = exports.protonStyle = function protonStyle(protonStyle_, proto
         var attr = protonStyle_[key];
 
         if (Array.isArray(attr)) {
-            style[key] = attr[0] + (attr[1] - attr[0]) * proton.protonFactor;
+            style[key] = interpolate(attr[0], attr[1], attr[2], proton.protonFactor);
         } else if ((typeof attr === 'undefined' ? 'undefined' : (0, _typeof3.default)(attr)) === 'object') {
             var protonName = proton.protonName;
             var protonIndex = proton.breakpointNameToIndex[protonName];
@@ -314,6 +314,8 @@ var protonStyle = exports.protonStyle = function protonStyle(protonStyle_, proto
                     style[key] = attr[protonName];
                 }
             }
+        } else if (typeof attr === 'function') {
+            style[key] = attr(proton.protonFactor);
         } else {
             style[key] = attr;
         }
@@ -321,3 +323,101 @@ var protonStyle = exports.protonStyle = function protonStyle(protonStyle_, proto
 
     return style;
 };
+
+var interpolate = function interpolate(a, b, u, f) {
+
+    // number check
+    {
+        var na = +a;
+        var nb = +b;
+
+        if (!isNaN(na) && !isNaN(nb)) {
+            var number = interpolateNumber(na, nb, f);
+            if (!u) {
+                return number;
+            }
+
+            return '' + number + u;
+        }
+    }
+
+    // color check
+    {
+        var ca = '' + a;
+        var cb = '' + b;
+
+        if ((ca.length === 4 || ca.length === 7) && (cb.length === 4 || cb.length === 7) && ca[0] === '#' && cb[0] === '#') {
+            return interpolateColor(ca, cb, f);
+        }
+    }
+
+    return 'unknown';
+};
+
+var interpolateNumber = function interpolateNumber(na, nb, f) {
+    return na + f * (nb - na);
+};
+
+var interpolateColor = function interpolateColor(ca, cb, f) {
+    var caNum = parseInt(ca.substring(1), 16);
+
+    var caNumRed = void 0;
+    var caNumGreen = void 0;
+    var caNumBlue = void 0;
+
+    if (ca.length === 4) {
+        caNumRed = caNum >> 8 & 0xf;
+        caNumGreen = caNum >> 4 & 0xf;
+        caNumBlue = caNum & 0xf;
+
+        caNumRed += 16 * caNumRed;
+        caNumGreen += 16 * caNumGreen;
+        caNumBlue += 16 * caNumBlue;
+    } else {
+        caNumRed = caNum >> 16 & 0xff;
+        caNumGreen = caNum >> 8 & 0xff;
+        caNumBlue = caNum & 0xff;
+    }
+
+    var cbNum = parseInt(cb.substring(1), 16);
+
+    var cbNumRed = void 0;
+    var cbNumGreen = void 0;
+    var cbNumBlue = void 0;
+
+    if (cb.length === 4) {
+        cbNumRed = cbNum >> 8 & 0xf;
+        cbNumGreen = cbNum >> 4 & 0xf;
+        cbNumBlue = cbNum & 0xf;
+
+        cbNumRed += 16 * cbNumRed;
+        cbNumGreen += 16 * cbNumGreen;
+        cbNumBlue += 16 * cbNumBlue;
+    } else {
+        cbNumRed = cbNum >> 16 & 0xff;
+        cbNumGreen = cbNum >> 8 & 0xff;
+        cbNumBlue = cbNum & 0xff;
+    }
+
+    var red = Math.round(caNumRed + f * (cbNumRed - caNumRed));
+    var green = Math.round(caNumGreen + f * (cbNumGreen - caNumGreen));
+    var blue = Math.round(caNumBlue + f * (cbNumBlue - caNumBlue));
+
+    var number = (red << 16) + (green << 8) + blue;
+    return '#' + number.toString(16);
+};
+
+var shortHexNumToLong = function shortHexNumToLong(shortHexNum) {
+    var caRed = shortHexNum >> 8 & 0xf;
+    caRed += 16 * caRed;
+
+    var caGreen = shortHexNum >> 4 & 0xf;
+    caGreen += 16 * caGreen;
+
+    var caBlue = shortHexNum & 0xf;
+    caBlue += 16 * caBlue;
+
+    return (caRed << 16) + (caGreen << 8) + caBlue;
+};
+
+var interpolateUnit = function interpolateUnit(ua, ub, f) {};

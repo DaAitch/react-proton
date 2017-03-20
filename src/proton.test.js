@@ -193,6 +193,114 @@ describe('protonStyle', () => {
             style1: 'value0'
         });
     });
+
+    it('should interpolate from greater to lower number', () => {
+        const style = {
+            style1: [100, 20]
+        };
+
+        expect(protonStyle(style, proton)).toEqual({
+            style1: 100
+        });
+
+        proton.setSize(100);
+        expect(protonStyle(style, proton)).toEqual({
+            style1: 100
+        });
+
+        proton.setSize(150);
+        expect(protonStyle(style, proton)).toEqual({
+            style1: 60
+        });
+
+        proton.setSize(200);
+        expect(protonStyle(style, proton)).toEqual({
+            style1: 20
+        });
+
+        proton.setSize(300);
+        expect(protonStyle(style, proton)).toEqual({
+            style1: 20
+        });
+    });
+
+    it('should interpolate colors', () => {
+        const style = {
+            style1: ['#102030', '#304010']
+        };
+
+        expect(protonStyle(style, proton)).toEqual({
+            style1: '#102030'
+        });
+
+        proton.setSize(100);
+        expect(protonStyle(style, proton)).toEqual({
+            style1: '#102030'
+        });
+
+        proton.setSize(150);
+        expect(protonStyle(style, proton)).toEqual({
+            style1: '#203020'
+        });
+
+        proton.setSize(200);
+        expect(protonStyle(style, proton)).toEqual({
+            style1: '#304010'
+        });
+
+        proton.setSize(300);
+        expect(protonStyle(style, proton)).toEqual({
+            style1: '#304010'
+        });
+
+    });
+
+    it('should interpolate short colors', () => {
+        const style = {
+            style1: ['#482', '#242']
+        };
+
+        proton.setSize(150);
+        expect(protonStyle(style, proton)).toEqual({
+            style1: '#336622'
+        });
+    });
+
+    it('should interpolate units', () => {
+        const style1 = {
+            style1: [10, 40, 'px']
+        };
+
+        proton.setSize(150);
+        expect(protonStyle(style1, proton)).toEqual({
+            style1: '25px'
+        });
+
+        const style2 = {
+            style2: [80, 30, 'rem']
+        };
+
+        proton.setSize(150);
+        expect(protonStyle(style2, proton)).toEqual({
+            style2: '55rem'
+        });
+    });
+
+    it('should interpolate via function', () => {
+        const f = jasmine.createSpy().and.returnValue('value');
+
+        const style = {
+            style: f
+        };
+
+        proton.setSize(150);
+
+        expect(protonStyle(style, proton)).toEqual({
+            style: 'value'
+        });
+
+        expect(f).toHaveBeenCalledWith(0.5);
+    });
 });
 
 describe('<ProtonProvider />', () => {

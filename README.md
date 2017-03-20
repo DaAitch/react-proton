@@ -69,10 +69,13 @@ class MyComponent extends React.Component {
         }
     };
 
-    // continuous values relative to min and max breakpoint
+    // continuous values relative to min and max breakpoint with unit
     electron3Style = {
         // a value between 10-20 relative from min breakpoint (10) to max breakpoint (20)
-        fontSize: [10, 20] // lacks of unit
+        fontSize: [10, 20, 'pt'],
+
+        // color interpolation
+        color: ['#111', '#333333']
     };
     
     // or everything mixed
@@ -100,13 +103,14 @@ export default MyComponent;
 ## Roadmap
 
 ### ✔ Implement `Proton`, `Electron` and simple style interpolation.
-### ... `protonStyle` interpolation should understand units and colors.
+### ✔ `protonStyle` interpolation should understand units, colors and functions.
 ### ... add `Neutron` to seperate responsibility.
 Maybe
 - `Neutron` for style-interpolation
 - `Electron` for responsibility (short-hand `Neutron` for `width` attribute)
 
 To be discussed...
+
 ### ... Ability to define many `Protons` to deduce from many values
 e.g.
 - `screenProton` deduced from `window.innerWidth`: make page responsive
